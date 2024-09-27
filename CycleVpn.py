@@ -32,6 +32,7 @@ region = piaRegions[regionNum]
 while True:
     command = "curl -X PUT "+ PROXY_IP +"/v1/vpn/settings -H \'Content-Type: application/json' -d \'{\"provider\": {\"server_selection\": {\"regions\": [\""+ region + "\"]}}}\'"
     os.system(command)
+    print(f"Switched to:{region}")
     time.sleep(PROXY_SWITCH_TIME)
     regionNum = (regionNum + 1) % len(piaRegions)
     region = piaRegions[regionNum]
