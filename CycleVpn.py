@@ -1,10 +1,11 @@
 import random
 import os
 import time
+import docker
 
-PROXY_IP = "172.18.0.2:8000"
+PROXY_IP = "127.0.0.1:8000"
 PROXY_SWITCH_TIME = 180
-
+CONTAINER_NAME = "gluetun-gluetun-1"
 
 piaRegions = ["AU Adelaide","AU Brisbane","AU Melbourne","AU Perth","AU Sydney","Albania","Algeria","Andorra","Argentina","Armenia",
 "Australia Streaming Optimized","Austria","Bahamas","Bangladesh","Belgium","Bolivia","Bosnia and Herzegovina",
@@ -28,11 +29,18 @@ piaRegions = ["AU Adelaide","AU Brisbane","AU Melbourne","AU Perth","AU Sydney",
 
 regionNum = random.randrange(0,len(piaRegions))
 region = piaRegions[regionNum]
+client = docker.from_env()
+gluetunContainer = client.containers.get(CONTAINER_NAME)
+gluetunState = gluetunContainer.attrs['State']['Health']['Status']
 
 while True:
     command = "curl -X PUT "+ PROXY_IP +"/v1/vpn/settings -H \'Content-Type: application/json' -d \'{\"provider\": {\"server_selection\": {\"regions\": [\""+ region + "\"]}}}\'"
     os.system(command)
     print(f"Switched to:{region}")
     time.sleep(PROXY_SWITCH_TIME)
+    print(f"Status:{gluetunState}")
+    if gluetunState == "unhealthy":
+        print("Container unhealthy, restarting")
+        gluetunContainer.restart()
     regionNum = (regionNum + 1) % len(piaRegions)
     region = piaRegions[regionNum]
