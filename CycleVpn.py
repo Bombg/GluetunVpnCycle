@@ -46,4 +46,5 @@ while True:
     time.sleep(PROXY_SWITCH_TIME)
     regionNum = (regionNum + 1) % len(piaRegions)
     region = piaRegions[regionNum]
+    gluetunContainer = client.containers.get(CONTAINER_NAME)
     gluetunState = gluetunContainer.attrs['State']['Health']['Status']
