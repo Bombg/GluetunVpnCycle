@@ -7,6 +7,8 @@ PROXY_IP = "127.0.0.1:8000"
 PROXY_SWITCH_TIME = 180
 CONTAINER_NAME = "gluetun-gluetun-1"
 CONTAINER_RESTART_WAIT = 30
+SCRIPT_START_TIME = time.time()
+TIME_BEFORE_RESTART = 86400
 
 piaRegions = ["AU Adelaide","AU Brisbane","AU Melbourne","AU Perth","AU Sydney","Albania","Algeria","Andorra","Argentina","Armenia",
 "Australia Streaming Optimized","Austria","Bahamas","Bangladesh","Belgium","Bolivia","Bosnia and Herzegovina",
@@ -35,6 +37,7 @@ gluetunContainer = client.containers.get(CONTAINER_NAME)
 gluetunState = gluetunContainer.attrs['State']['Health']['Status']
 
 while True:
+    print("_____________________________________________________________________________")
     print(f"Status:{gluetunState}")
     if not gluetunState or gluetunState == "unhealthy":
         print("Container unhealthy, restarting container")
@@ -44,6 +47,11 @@ while True:
     os.system(command)
     print(f"Switched to:{region}")
     time.sleep(PROXY_SWITCH_TIME)
+    timeSinceStart = time.time() - SCRIPT_START_TIME
+    print(f"TimeSinceStart:{timeSinceStart}")
+    if timeSinceStart >= TIME_BEFORE_RESTART:
+        print("rebooting server")
+        os.system('reboot')
     regionNum = (regionNum + 1) % len(piaRegions)
     region = piaRegions[regionNum]
     gluetunContainer = client.containers.get(CONTAINER_NAME)
