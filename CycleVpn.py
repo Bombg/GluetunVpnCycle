@@ -50,6 +50,7 @@ while True:
     timeSinceStart = time.time() - SCRIPT_START_TIME
     print(f"TimeSinceStart:{timeSinceStart}")
     if timeSinceStart >= TIME_BEFORE_RESTART:
+        client.images.prune(filters={'dangling': False})
         print("rebooting server")
         os.system('reboot')
     regionNum = (regionNum + 1) % len(piaRegions)
