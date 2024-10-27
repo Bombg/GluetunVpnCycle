@@ -6,6 +6,7 @@ import docker
 PROXY_IP = "127.0.0.1:8000"
 PROXY_SWITCH_TIME = 180
 CONTAINER_NAME = "gluetun-gluetun-1"
+SOCKS5_CONTAINER_NAME = "gluetun-socks5-1"
 CONTAINER_RESTART_WAIT = 30
 SCRIPT_START_TIME = time.time()
 TIME_BEFORE_RESTART = 86400
@@ -34,6 +35,7 @@ regionNum = random.randrange(0,len(piaRegions))
 region = piaRegions[regionNum]
 client = docker.from_env()
 gluetunContainer = client.containers.get(CONTAINER_NAME)
+socks5Container = client.containers.get(SOCKS5_CONTAINER_NAME)
 gluetunState = gluetunContainer.attrs['State']['Health']['Status']
 
 while True:
@@ -44,6 +46,8 @@ while True:
         gluetunContainer.restart()
         time.sleep(CONTAINER_RESTART_WAIT)
     command = "curl -X PUT "+ PROXY_IP +"/v1/vpn/settings -H \'Content-Type: application/json' -d \'{\"provider\": {\"server_selection\": {\"regions\": [\""+ region + "\"]}}}\'"
+    time.sleep(5)
+    socks5Container.restart()
     os.system(command)
     print(f"Switched to:{region}")
     time.sleep(PROXY_SWITCH_TIME)
@@ -56,4 +60,5 @@ while True:
     regionNum = (regionNum + 1) % len(piaRegions)
     region = piaRegions[regionNum]
     gluetunContainer = client.containers.get(CONTAINER_NAME)
+    socks5Container = client.containers.get(SOCKS5_CONTAINER_NAME)
     gluetunState = gluetunContainer.attrs['State']['Health']['Status']
