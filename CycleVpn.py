@@ -11,25 +11,18 @@ CONTAINER_RESTART_WAIT = 30
 SCRIPT_START_TIME = time.time()
 TIME_BEFORE_RESTART = 86400
 
-piaRegions = ["AU Adelaide","AU Brisbane","AU Melbourne","AU Perth","AU Sydney","Albania","Algeria","Andorra","Argentina","Armenia",
-"Australia Streaming Optimized","Austria","Bahamas","Bangladesh","Belgium","Bolivia","Bosnia and Herzegovina",
-"Brazil","Bulgaria","CA Montreal","CA Ontario","CA Ontario Streaming Optimized","CA Toronto","CA Vancouver",
-"Cambodia","Chile","China","Colombia","Costa Rica","Croatia","Cyprus","Czech Republic","DE Berlin","DE Frankfurt",
-"DE Germany Streaming Optimized","DK Copenhagen","DK Streaming Optimized","ES Madrid","ES Valencia","Ecuador","Egypt",
-"Estonia","FI Helsinki","FI Streaming Optimized","France","Georgia","Greece","Greenland","Guatemala","Hong Kong","Hungary",
-"IT Milano","IT Streaming Optimized","Iceland","India","Indonesia","Ireland","Isle of Man","Israel","JP Streaming Optimized",
-"JP Tokyo","Kazakhstan","Latvia","Liechtenstein","Lithuania","Luxembourg","Macao","Malaysia","Malta","Mexico","Moldova","Monaco",
-"Mongolia","Montenegro","Morocco","NL Netherlands Streaming Optimized","Nepal","Netherlands","New Zealand","Nigeria",
-"North Macedonia","Norway","Panama","Peru","Philippines","Poland","Portugal","Qatar","Romania","SE Stockholm",
-"SE Streaming Optimized","Saudi Arabia","Serbia","Singapore","Slovakia","Slovenia","South Africa","South Korea","Sri Lanka",
-"Switzerland","Taiwan","Turkey","UK London","UK Manchester","UK Southampton","UK Streaming Optimized","US Alabama","US Alaska",
-"US Atlanta","US Baltimore","US California","US Chicago","US Connecticut","US Denver","US East","US East Streaming Optimized",
-"US Florida","US Honolulu","US Houston","US Idaho","US Indiana","US Iowa","US Kansas","US Kentucky","US Las Vegas","US Maine",
-"US Massachusetts","US Michigan","US Minnesota","US Missouri","US Nebraska","US New Hampshire","US New Mexico",
-"US New York","US North Dakota","US Ohio","US Oklahoma","US Oregon","US Pennsylvania","US Rhode Island",
-"US Seattle","US Silicon Valley","US South Carolina","US South Dakota","US Tennessee","US Vermont","US Washington DC",
-"US West","US West Streaming Optimized","US West Virginia","US Wilmington","US Wisconsin","US Wyoming","Ukraine","United Arab Emirates","Uruguay",
-"Venezuela","Vietnam"]
+piaRegions = ["Albania", "Algeria", "Andorra", "Argentina", "Armenia", "Austria", "Bahamas", "Belgium", "Bolivia", "Bosnia and Herzegovina", 
+                "Brazil", "Bulgaria", "CA Montreal", "CA Ontario", "CA Ontario Streaming Optimized", "CA Toronto", "CA Vancouver", "Cambodia", "Chile", "Colombia", 
+                "Costa Rica", "Croatia", "Cyprus", "Czech Republic", "DE Berlin", "DE Frankfurt", "DE Germany Streaming Optimized", "DK Copenhagen", 
+                "DK Streaming Optimized", "ES Madrid", "ES Valencia", "Ecuador", "Estonia", "FI Helsinki", "FI Streaming Optimized", "Georgia", "Greece", "Greenland", 
+                "Guatemala", "Hong Kong", "Hungary", "IT Milano", "IT Streaming Optimized", "Iceland", "Ireland", "Isle of Man", "Israel", "JP Streaming Optimized", 
+                "JP Tokyo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Macao", "Malta", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", 
+                "NL Netherlands Streaming Optimized", "Nepal", "Netherlands", "New Zealand", "Nigeria", "North Macedonia", "Norway", "Panama", "Peru", "Poland", "Portugal", 
+                "Romania", "SE Stockholm", "SE Streaming Optimized", "Serbia", "Slovakia", "Slovenia", "South Africa", "South Korea", "Switzerland", "Taiwan", "Turkey", "US Alaska", 
+                "US Atlanta", "US Baltimore", "US California", "US Chicago", "US Connecticut", "US Denver", "US East", "US East Streaming Optimized", "US Honolulu", "US Houston", "US Las Vegas", 
+                "US Maine", "US Massachusetts", "US Michigan", "US Minnesota", "US New Hampshire", "US New Mexico", "US New York", "US North Dakota", "US Ohio", "US Oregon", "US Pennsylvania", 
+                "US Rhode Island", "US Seattle", "US Silicon Valley", "US Vermont", "US Washington DC", "US West", "US West Streaming Optimized", "US Wilmington", "US Wisconsin", "US Wyoming", 
+                "Ukraine", "Uruguay", "Venezuela"]
 
 regionNum = random.randrange(0,len(piaRegions))
 region = piaRegions[regionNum]
