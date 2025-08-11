@@ -2,16 +2,19 @@ import random
 import os
 import time
 import docker
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import ClassVar
 
-PROXY_IP = "127.0.0.1:8000"
-PROXY_SWITCH_TIME = 180
-CONTAINER_NAME = "gluetun-gluetun-1"
-SOCKS5_CONTAINER_NAME = "gluetun-socks5-1"
-CONTAINER_RESTART_WAIT = 30
-SCRIPT_START_TIME = time.time()
-TIME_BEFORE_RESTART = 86400
-
-piaRegions = ["Albania", "Algeria", "Andorra", "Argentina", "Armenia", "Austria", "Bahamas", "Belgium", "Bolivia", "Bosnia and Herzegovina", 
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
+    PROXY_IP:str = "127.0.0.1:8000"
+    PROXY_SWITCH_TIME:int = 180
+    CONTAINER_NAME:str = "gluetun-gluetun-1"
+    SOCKS5_CONTAINER_NAME:str = "gluetun-socks5-1"
+    CONTAINER_RESTART_WAIT:int = 30
+    SCRIPT_START_TIME:ClassVar[int] = time.time()
+    TIME_BEFORE_RESTART:int = 86400
+    piaRegions:ClassVar[list[str]] = ["Albania", "Algeria", "Andorra", "Argentina", "Armenia", "Austria", "Bahamas", "Belgium", "Bolivia", "Bosnia and Herzegovina", 
                 "Brazil", "Bulgaria", "CA Montreal", "CA Ontario", "CA Ontario Streaming Optimized", "CA Toronto", "CA Vancouver", "Cambodia", "Chile", "Colombia", 
                 "Costa Rica", "Croatia", "Cyprus", "Czech Republic", "DE Berlin", "DE Frankfurt", "DE Germany Streaming Optimized", "DK Copenhagen", 
                 "DK Streaming Optimized", "ES Madrid", "ES Valencia", "Ecuador", "Estonia", "FI Helsinki", "FI Streaming Optimized", "Georgia", "Greece", "Greenland", 
@@ -24,34 +27,37 @@ piaRegions = ["Albania", "Algeria", "Andorra", "Argentina", "Armenia", "Austria"
                 "US Rhode Island", "US Seattle", "US Silicon Valley", "US Vermont", "US Washington DC", "US West", "US West Streaming Optimized", "US Wilmington", "US Wisconsin", "US Wyoming", 
                 "Ukraine", "Uruguay", "Venezuela"]
 
-regionNum = random.randrange(0,len(piaRegions))
-region = piaRegions[regionNum]
+baseSettings = Settings()
+regionNum = random.randrange(0,len(baseSettings.piaRegions))
+region = baseSettings.piaRegions[regionNum]
 client = docker.from_env()
-gluetunContainer = client.containers.get(CONTAINER_NAME)
-socks5Container = client.containers.get(SOCKS5_CONTAINER_NAME)
-gluetunState = gluetunContainer.attrs['State']['Health']['Status']
 
-while True:
-    print("_____________________________________________________________________________")
-    print(f"Status:{gluetunState}")
-    if not gluetunState or gluetunState == "unhealthy":
-        print("Container unhealthy, restarting container")
-        gluetunContainer.restart()
-        time.sleep(CONTAINER_RESTART_WAIT)
-    command = "curl -X PUT "+ PROXY_IP +"/v1/vpn/settings -H \'Content-Type: application/json' -d \'{\"provider\": {\"server_selection\": {\"regions\": [\""+ region + "\"]}}}\'"
-    time.sleep(5)
-    socks5Container.restart()
+def SwitchGluetunRegion():
+    command = "curl -X PUT "+ baseSettings.PROXY_IP +"/v1/vpn/settings -H \'Content-Type: application/json' -d \'{\"provider\": {\"server_selection\": {\"regions\": [\""+ region + "\"]}}}\'"
     os.system(command)
     print(f"Switched to:{region}")
-    time.sleep(PROXY_SWITCH_TIME)
-    timeSinceStart = time.time() - SCRIPT_START_TIME
-    print(f"TimeSinceStart:{timeSinceStart}")
-    if timeSinceStart >= TIME_BEFORE_RESTART:
-        client.images.prune(filters={'dangling': False})
-        print("rebooting server")
-        os.system('reboot')
-    regionNum = (regionNum + 1) % len(piaRegions)
-    region = piaRegions[regionNum]
-    gluetunContainer = client.containers.get(CONTAINER_NAME)
-    socks5Container = client.containers.get(SOCKS5_CONTAINER_NAME)
-    gluetunState = gluetunContainer.attrs['State']['Health']['Status']
+    regionNum = (regionNum + 1) % len(baseSettings.piaRegions)
+    region = baseSettings.piaRegions[regionNum]
+
+def RestartAndClean(client):
+    client.images.prune(filters={'dangling': False})
+    print("rebooting server")
+    os.system('reboot')
+
+if __name__ == "__main__":
+    while True:
+        print("_________________________________________________________________________________________")
+        containers = client.containers.list(all=True)
+        for container in containers:
+            if container.status.lower() != 'healthy' and container.status.lower() != 'running' and container.status.lower() != 'starting':
+                print(f"{container.status}:{container.name} restarting container")
+                container.restart()
+                time.sleep(baseSettings.CONTAINER_RESTART_WAIT)
+        if baseSettings.PROXY_IP:
+            SwitchGluetunRegion()
+        time.sleep(baseSettings.PROXY_SWITCH_TIME)
+        timeSinceStart = time.time() - baseSettings.SCRIPT_START_TIME
+        print(f"TimeSinceStart:{timeSinceStart}")
+        if timeSinceStart >= baseSettings.TIME_BEFORE_RESTART:
+            RestartAndClean(client)
+    
