@@ -28,13 +28,13 @@ class Settings(BaseSettings):
                 "Ukraine", "Uruguay", "Venezuela"]
 
 baseSettings = Settings()
-global regionNum
 regionNum = random.randrange(0,len(baseSettings.piaRegions))
-global region
 region = baseSettings.piaRegions[regionNum]
 client = docker.from_env()
 
 def SwitchGluetunRegion():
+    global region
+    global regionNum
     command = "curl -X PUT "+ baseSettings.PROXY_IP +"/v1/vpn/settings -H \'Content-Type: application/json' -d \'{\"provider\": {\"server_selection\": {\"regions\": [\""+ region + "\"]}}}\'"
     os.system(command)
     print(f"Switched to:{region}")
