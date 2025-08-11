@@ -28,7 +28,9 @@ class Settings(BaseSettings):
                 "Ukraine", "Uruguay", "Venezuela"]
 
 baseSettings = Settings()
+global regionNum
 regionNum = random.randrange(0,len(baseSettings.piaRegions))
+global region
 region = baseSettings.piaRegions[regionNum]
 client = docker.from_env()
 
