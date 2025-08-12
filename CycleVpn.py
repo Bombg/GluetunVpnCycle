@@ -32,6 +32,7 @@ baseSettings = Settings()
 regionNum = random.randrange(0,len(baseSettings.piaRegions))
 region = baseSettings.piaRegions[regionNum]
 client = docker.from_env()
+nonRestartStatuses = ['healthy', 'running', 'starting', 'created', 'paused', 'restarting', 'removing']
 
 def SwitchGluetunRegion():
     global region
@@ -52,7 +53,7 @@ if __name__ == "__main__":
         print("_________________________________________________________________________________________")
         containers = client.containers.list(all=True)
         for container in containers:
-            if container.status.lower() != 'healthy' and container.status.lower() != 'running' and container.status.lower() != 'starting':
+            if container.status.lower() not in nonRestartStatuses:
                 print(f"{container.status}:{container.name} restarting container")
                 container.restart()
                 time.sleep(baseSettings.CONTAINER_RESTART_WAIT)
