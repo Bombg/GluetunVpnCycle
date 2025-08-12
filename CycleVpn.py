@@ -8,7 +8,8 @@ from typing import ClassVar
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
     PROXY_IP:str = "127.0.0.1:8000"
-    PROXY_SWITCH_TIME:int = 180
+    SWITCH_GLUETUN:bool = True
+    LOOP_WAIT_TIME:int = 180
     CONTAINER_NAME:str = "gluetun-gluetun-1"
     SOCKS5_CONTAINER_NAME:str = "gluetun-socks5-1"
     CONTAINER_RESTART_WAIT:int = 30
@@ -55,9 +56,9 @@ if __name__ == "__main__":
                 print(f"{container.status}:{container.name} restarting container")
                 container.restart()
                 time.sleep(baseSettings.CONTAINER_RESTART_WAIT)
-        if baseSettings.PROXY_IP:
+        if baseSettings.SWITCH_GLUETUN:
             SwitchGluetunRegion()
-        time.sleep(baseSettings.PROXY_SWITCH_TIME)
+        time.sleep(baseSettings.LOOP_WAIT_TIME)
         timeSinceStart = time.time() - baseSettings.SCRIPT_START_TIME
         print(f"TimeSinceStart:{timeSinceStart}")
         if timeSinceStart >= baseSettings.TIME_BEFORE_RESTART:
