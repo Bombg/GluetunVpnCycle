@@ -39,7 +39,7 @@ def SwitchGluetunRegion():
     global regionNum
     command = "curl -X PUT "+ baseSettings.PROXY_IP +"/v1/vpn/settings -H \'Content-Type: application/json' -d \'{\"provider\": {\"server_selection\": {\"regions\": [\""+ region + "\"]}}}\'"
     os.system(command)
-    print(f"Switched to:{region}")
+    #print(f"Switched to:{region}")
     regionNum = (regionNum + 1) % len(baseSettings.piaRegions)
     region = baseSettings.piaRegions[regionNum]
 
@@ -50,7 +50,8 @@ def RestartAndClean(client):
 
 if __name__ == "__main__":
     while True:
-        print("_________________________________________________________________________________________")
+        # container.attrs['State']['Health']['Status'] -- for health status. .status only has basic statuses
+        #print("_________________________________________________________________________________________")
         containers = client.containers.list(all=True)
         for container in containers:
             if container.status.lower() not in nonRestartStatuses:
@@ -61,7 +62,7 @@ if __name__ == "__main__":
             SwitchGluetunRegion()
         time.sleep(baseSettings.LOOP_WAIT_TIME)
         timeSinceStart = time.time() - baseSettings.SCRIPT_START_TIME
-        print(f"TimeSinceStart:{timeSinceStart}")
+        #print(f"TimeSinceStart:{timeSinceStart}")
         if timeSinceStart >= baseSettings.TIME_BEFORE_RESTART:
             RestartAndClean(client)
     
