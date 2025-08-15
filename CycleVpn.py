@@ -56,7 +56,16 @@ if __name__ == "__main__":
         for container in containers:
             if container.status.lower() not in nonRestartStatuses:
                 print(f"{container.status}:{container.name} restarting container")
-                container.restart()
+                try:
+                    container.restart()
+                except Exception:
+                    try:
+                        container.stop()
+                        time.sleep(5)
+                        container.start()
+                    except Exception:
+                        print("Docker can't fix. Restarting")
+                        RestartAndClean(client)
                 time.sleep(baseSettings.CONTAINER_RESTART_WAIT)
         if baseSettings.SWITCH_GLUETUN:
             SwitchGluetunRegion()
